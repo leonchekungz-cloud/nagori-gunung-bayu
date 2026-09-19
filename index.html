@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator Surat Tanah Desa / Nagori</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        @media print {
+            body * { visibility: hidden; }
+            #preview-section, #preview-section * { visibility: visible; }
+            #preview-section {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                margin: 0;
+                padding: 0;
+                box-shadow: none !important;
+                border: none !important;
+            }
+            .no-print { display: none !important; }
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col">
+
+    <header class="bg-slate-800 border-b border-slate-700 px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4 no-print">
+        <div class="flex items-center space-x-3">
+            <div class="bg-emerald-600 text-white p-2.5 rounded-xl shadow-lg">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+            </div>
+            <div>
+                <h1 class="text-xl font-bold tracking-tight text-white">Generator Surat Tanah Desa / Nagori</h1>
+                <p class="text-xs text-slate-400">Isi formulir di kiri, lihat hasil dan cetak dokumen secara instan di kanan.</p>
+            </div>
+        </div>
+        <div class="flex items-center space-x-3 w-full sm:w-auto justify-end">
+            <button onclick="resetForm()" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-200 text-sm font-medium rounded-lg transition shadow-sm">
+                Reset Form
+            </button>
+            <button onclick="copyPlainText()" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-200 text-sm font-medium rounded-lg transition shadow-sm">
+                Salin Teks
+            </button>
+            <button onclick="window.print()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium rounded-lg transition shadow-lg flex items-center space-x-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                <span>Cetak / PDF</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- Left Column: Form Inputs -->
+        <section class="lg:col-span-5 bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-xl space-y-6 no-print overflow-y-auto max-h-[calc(100vh-140px)]">
+            <h2 class="text-lg font-semibold text-emerald-400 border-b border-slate-700 pb-3 flex items-center justify-between">
+                <span>Formulir Data Surat</span>
+                <span class="text-xs font-normal text-slate-400">Pembaruan Real-time</span>
+            </h2>
+
+            <!-- Surat Details -->
+            <div class="space-y-4">
+                <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-400">1. Keterangan Surat & Tujuan</h3>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Tempat Surat</label>
+                        <input type="text" id="input-tempat" value="Gunung Bayu" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Tanggal Surat</label>
+                        <input type="text" id="input-tanggal" value="[Tanggal] [Bulan] [2026]" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Lampiran Berkas</label>
+                        <input type="text" id="input-lampiran" value="[...]" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Pangulu / Kepala Desa</label>
+                        <input type="text" id="input-pangulu" value="Pangulu Gunung Bayu" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pemohon Details -->
+            <div class="space-y-4 pt-2 border-t border-slate-700">
+                <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-400">2. Data Pemohon</h3>
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Nama Lengkap</label>
+                    <input type="text" id="input-nama" value="[...]" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">NIK</label>
+                        <input type="text" id="input-nik" value="[...]" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Tempat/Tgl Lahir</label>
+                        <input type="text" id="input-ttl" value="[...]" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Pekerjaan</label>
+                        <input type="text" id="input-pekerjaan" value="[...]" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">No. Telepon</label>
+                        <input type="text" id="input-telp" value="[...]" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Alamat Sesuai KTP</label>
+                    <input type="text" id="input-alamat" value="[...]" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                </div>
+            </div>
+
+            <!-- Land Details -->
+            <div class="space-y-4 pt-2 border-t border-slate-700">
+                <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-400">3. Data & Batas Tanah</h3>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Dusun / Huta</label>
+                        <input type="text" id="input-dusun" value="[...]" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Nagori / Desa</label>
+                        <input type="text" id="input-nagori" value="[...]" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Kecamatan</label>
+                        <input type="text" id="input-kecamatan" value="[...]" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Kabupaten</label>
+                        <input type="text" id="input-kabupaten" value="[...]" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Luas Tanah</label>
+                    <input type="text" id="input-luas" value="Kurang lebih [...] m²" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Batas Utara</label>
+                        <input type="text" id="input-utara" value="[...]" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Batas Selatan</label>
+                        <input type="text" id="input-selatan" value="[...]" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Batas Timur</label>
+                        <input type="text" id="input-timur" value="[...]" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Batas Barat</label>
+                        <input type="text" id="input-barat" value="[...]" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Tanggal Perolehan</label>
+                        <input type="text" id="input-tgl-perolehan" value="[...]" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Cara Perolehan</label>
+                        <input type="text" id="input-cara-perolehan" value="[...]" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Fungsi / Penggunaan Saat Ini</label>
+                    <input type="text" id="input-penggunaan" value="[...]" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                </div>
+            </div>
+        </section>
+
+        <!-- Right Column: Live Letter Preview -->
+        <section class="lg:col-span-7 flex flex-col items-center justify-start overflow-y-auto max-h-[calc(100vh-140px)]">
+            <div id="preview-section" class="w-full max-w-[210mm] bg-white text-black font-serif p-[20mm] shadow-2xl rounded-lg flex flex-col justify-between" style="min-height: 297mm; font-size: 11pt; line-height: 1.45;">
+                <div class="space-y-4">
+                    <div id="prev-tempat-tanggal" class="text-right text-[10.5pt] mb-3">
+                        Gunung Bayu, [Tanggal] [Bulan] [2026]
+                    </div>
+                    
+                    <div class="mb-4">
+                        <strong>Perihal :</strong> Permohonan Pengesahan Surat Keterangan Tanah / Penguasaan Fisik<br>
+                        <strong>Lampiran :</strong> <span id="prev-lampiran">[...]</span> Berkas<br><br>
+                        Kepada Yth.<br>
+                        <strong id="prev-pangulu">Pangulu Gunung Bayu</strong><br>
+                        di<br>
+                        &nbsp;&nbsp;&nbsp;Tempat
+                    </div>
+
+                    <div class="mb-3">
+                        Dengan hormat,<br>
+                        Yang bertanda tangan di bawah ini:
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 140px 1fr; gap: 4px 10px; margin-bottom: 10px;">
+                        <div>Nama Lengkap</div>
+                        <div>: <span id="prev-nama">[...]</span></div>
+                        <div>NIK</div>
+                        <div>: <span id="prev-nik">[...]</span></div>
+                        <div>Tempat/Tgl. Lahir</div>
+                        <div>: <span id="prev-ttl">[...]</span></div>
+                        <div>Pekerjaan</div>
+                        <div>: <span id="prev-pekerjaan">[...]</span></div>
+                        <div>Alamat Sesuai KTP</div>
+                        <div>: <span id="prev-alamat">[...]</span></div>
+                        <div>Nomor Telepon</div>
+                        <div>: <span id="prev-telp">[...]</span></div>
+                    </div>
+
+                    <div style="margin-bottom: 8px; text-align: justify;">
+                        Dengan ini mengajukan permohonan kepada Bapak Pangulu/Kepala Desa untuk menerbitkan dan mengesahkan <strong>Surat Pernyataan Penguasaan Fisik Bidang Tanah (SPPFT)</strong> serta <strong>Surat Keterangan Riwayat Tanah / Tidak Sengketa</strong> atas sebidang tanah milik saya yang terletak di:
+                    </div>
+
+                    <div style="border: 1px solid #cbd5e1; padding: 8px 12px; background-color: #f8fafc; margin: 8px 0; border-radius: 4px;">
+                        <div style="display: grid; grid-template-columns: 120px 1fr; gap: 4px 10px; margin-bottom: 6px;">
+                            <div>Dusun / Huta</div>
+                            <div>: <span id="prev-dusun">[...]</span></div>
+                            <div>Nagori / Desa</div>
+                            <div>: <span id="prev-nagori">[...]</span></div>
+                            <div>Kecamatan</div>
+                            <div>: <span id="prev-kecamatan">[...]</span></div>
+                            <div>Kabupaten</div>
+                            <div>: <span id="prev-kabupaten">[...]</span></div>
+                            <div>Luas Tanah</div>
+                            <div>: <span id="prev-luas">Kurang lebih [...] m²</span></div>
+                        </div>
+                        <div style="margin-top: 6px; font-size: 10pt;">
+                            <strong>Batas-batas Tanah:</strong><br>
+                            - Sebelah Utara: <span id="prev-utara">[...]</span> &nbsp;|&nbsp; - Sebelah Selatan: <span id="prev-selatan">[...]</span><br>
+                            - Sebelah Timur: <span id="prev-timur">[...]</span> &nbsp;|&nbsp; - Sebelah Barat: <span id="prev-barat">[...]</span>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 8px; text-align: justify; font-size: 10.5pt;">
+                        Tanah tersebut dikuasai dan diperoleh sejak tanggal <span id="prev-tgl-perolehan">[...]</span> secara terus-menerus melalui <strong><span id="prev-cara-perolehan">[...]</span></strong> dan hingga saat ini dipergunakan untuk <span id="prev-penggunaan">[...]</span>. Tanah ini tidak dalam status sengketa atau perkara dengan pihak manapun.
+                    </div>
+
+                    <div style="margin-bottom: 4px; font-size: 10.5pt;">
+                        Sebagai kelengkapan administrasi, bersama ini saya lampirkan:
+                    </div>
+                    <ol style="margin: 0 0 8px 20px; padding: 0; font-size: 10.5pt;">
+                        <li>Fotokopi KTP dan Kartu Keluarga (KK) pemohon</li>
+                        <li>Bukti alas hak awal / kuitansi transaksi / surat perolehan</li>
+                        <li>Fotokopi KTP para saksi batas tanah</li>
+                        <li>Lembar PBB (Pajak Bumi dan Bangunan) terakhir <em>(jika ada)</em></li>
+                    </ol>
+
+                    <div style="text-align: justify; font-size: 10.5pt; margin-bottom: 12px;">
+                        Demikian surat permohonan ini saya sampaikan agar dapat diproses dan ditandatangani sebagaimana mestinya. Atas bantuan dan kerja sama Bapak, saya ucapkan terima kasih.
+                    </div>
+                </div>
+
+                <div class="mt-8 flex justify-end">
+                    <div class="text-center w-[220px]">
+                        Hormat saya,<br>
+                        Pemohon,
+                        <div class="h-[50px]"></div>
+                        <strong>(<span id="prev-nama-ttd">[Nama Terang Pemohon]</span>)</strong>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <div id="toast" class="fixed bottom-5 right-5 bg-emerald-600 text-white px-4 py-3 rounded-xl shadow-2xl opacity-0 transition-opacity duration-300 pointer-events-none z-50 text-sm font-medium flex items-center space-x-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+        <span id="toast-msg">Teks berhasil disalin!</span>
+    </div>
+
+    <script>
+        // Mapping input IDs to preview span IDs
+        const fields = [
+            'tempat', 'tanggal', 'lampiran', 'pangulu', 'nama', 'nik', 'ttl', 
+            'pekerjaan', 'telp', 'alamat', 'dusun', 'nagori', 'kecamatan', 
+            'kabupaten', 'luas', 'utara', 'selatan', 'timur', 'barat', 
+            'tgl-perolehan', 'cara-perolehan', 'penggunaan'
+        ];
+
+        function updatePreview() {
+            // Update tempat & tanggal
+            const tempat = document.getElementById('input-tempat').value || '...';
+            const tanggal = document.getElementById('input-tanggal').value || '...';
+            document.getElementById('prev-tempat-tanggal').innerText = `${tempat}, ${tanggal}`;
+
+            fields.forEach(field => {
+                const inputEl = document.getElementById(`input-${field}`);
+                const prevEl = document.getElementById(`prev-${field}`);
+                if (inputEl && prevEl) {
+                    prevEl.innerText = inputEl.value;
+                }
+            });
+
+            // Also update TTD name
+            const namaVal = document.getElementById('input-nama').value;
+            const ttdEl = document.getElementById('prev-nama-ttd');
+            if (ttdEl) {
+                ttdEl.innerText = namaVal && namaVal !== '[...]' ? namaVal : 'Nama Terang Pemohon';
+            }
+        }
+
+        // Attach listeners
+        fields.forEach(field => {
+            const el = document.getElementById(`input-${field}`);
+            if (el) {
+                el.addEventListener('input', updatePreview);
+            }
+        });
+        document.getElementById('input-tempat').addEventListener('input', updatePreview);
+        document.getElementById('input-tanggal').addEventListener('input', updatePreview);
+
+        function resetForm() {
+            document.getElementById('input-tempat').value = 'Gunung Bayu';
+            document.getElementById('input-tanggal').value = '[Tanggal] [Bulan] [2026]';
+            document.getElementById('input-lampiran').value = '[...]';
+            document.getElementById('input-pangulu').value = 'Pangulu Gunung Bayu';
+            document.getElementById('input-nama').value = '[...]';
+            document.getElementById('input-nik').value = '[...]';
+            document.getElementById('input-ttl').value = '[...]';
+            document.getElementById('input-pekerjaan').value = '[...]';
+            document.getElementById('input-telp').value = '[...]';
+            document.getElementById('input-alamat').value = '[...]';
+            document.getElementById('input-dusun').value = '[...]';
+            document.getElementById('input-nagori').value = '[...]';
+            document.getElementById('input-kecamatan').value = '[...]';
+            document.getElementById('input-kabupaten').value = '[...]';
+            document.getElementById('input-luas').value = 'Kurang lebih [...] m²';
+            document.getElementById('input-utara').value = '[...]';
+            document.getElementById('input-selatan').value = '[...]';
+            document.getElementById('input-timur').value = '[...]';
+            document.getElementById('input-barat').value = '[...]';
+            document.getElementById('input-tgl-perolehan').value = '[...]';
+            document.getElementById('input-cara-perolehan').value = '[...]';
+            document.getElementById('input-penggunaan').value = '[...]';
+            updatePreview();
+            showToast('Formulir berhasil direset!');
+        }
+
+        function copyPlainText() {
+            const previewText = document.getElementById('preview-section').innerText;
+            const textarea = document.createElement('textarea');
+            textarea.value = previewText;
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showToast('Teks surat berhasil disalin ke clipboard!');
+            } catch (err) {
+                showToast('Gagal menyalin teks.');
+            }
+            document.body.removeChild(textarea);
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = msg;
+            toast.classList.remove('opacity-0');
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+            }, 2500);
+        }
+
+        // Initial run
+        updatePreview();
+    </script>
+</body>
+</html>
